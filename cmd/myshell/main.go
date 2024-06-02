@@ -9,25 +9,45 @@ import (
 )
 
 func main() {
-
 	for {
 		fmt.Fprint(os.Stdout, "$ ")
 		value := waitForUserInput()
 		value = strings.Trim(value, "\n")
 		cmd := strings.Split(value, " ")
-		if cmd[0] == "exit" {
-			os.Exit(0)
-		}
-		if cmd[0] == "echo" {
-			echo(cmd[1:])
+		shellFn, ok := shellBuiltins[cmd[0]]
+		if !ok {
+			fmt.Printf("%s: command not found\n", cmd[0])
 			continue
 		}
-		fmt.Printf("%s: command not found\n", cmd[0])
+		shellFn(cmd, shellBuiltins)
 	}
 }
 
-func echo(s []string) {
-	fmt.Println(strings.Join(s, " "))
+type shellFunction func([]string, shellBuiltinsType)
+
+type shellBuiltinsType map[string]shellFunction
+
+var shellBuiltins = shellBuiltinsType{
+	"exit": checkArgs(shellExit, -1),
+	"echo": checkArgs(shellEcho, -1),
+	"type": checkArgs(shellType, -1),
+}
+
+func shellEcho(cmd []string, _builtins shellBuiltinsType) {
+	fmt.Println(strings.Join(cmd[1:], " "))
+}
+
+func shellExit(_cmd []string, _builtins shellBuiltinsType) {
+	os.Exit(0)
+}
+
+func shellType(cmd []string, builtins shellBuiltinsType) {
+	_, ok := builtins[cmd[1]]
+	if !ok {
+		fmt.Printf("%s not found\n", cmd[1])
+		return
+	}
+	fmt.Printf("%s is a shell builtin\n", cmd[1])
 }
 
 func waitForUserInput() string {
@@ -36,4 +56,11 @@ func waitForUserInput() string {
 		log.Fatalf("command error %q", err)
 	}
 	return value
+}
+
+func checkArgs(fn shellFunction, _n int) shellFunction {
+	return func(cmd []string, builtins shellBuiltinsType) {
+		// TO DO
+		fn(cmd, builtins)
+	}
 }

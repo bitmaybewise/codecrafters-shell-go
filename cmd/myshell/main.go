@@ -18,8 +18,16 @@ func main() {
 		if cmd[0] == "exit" {
 			os.Exit(0)
 		}
+		if cmd[0] == "echo" {
+			echo(cmd[1:])
+			continue
+		}
 		fmt.Printf("%s: command not found\n", cmd[0])
 	}
+}
+
+func echo(s []string) {
+	fmt.Println(strings.Join(s, " "))
 }
 
 func waitForUserInput() string {

@@ -43,11 +43,26 @@ func shellExit(_cmd []string, _builtins shellBuiltinsType) {
 
 func shellType(cmd []string, builtins shellBuiltinsType) {
 	_, ok := builtins[cmd[1]]
-	if !ok {
-		fmt.Printf("%s not found\n", cmd[1])
+	if ok {
+		fmt.Printf("%s is a shell builtin\n", cmd[1])
 		return
 	}
-	fmt.Printf("%s is a shell builtin\n", cmd[1])
+	osPath := os.Getenv("PATH")
+	paths := strings.Split(osPath, ":")
+	for _, dir := range paths {
+		files, err := os.ReadDir(dir)
+		if err != nil {
+			continue
+		}
+		for _, file := range files {
+			if file.Name() == cmd[1] {
+				fmt.Printf("%s is %s/%s\n", cmd[1], dir, cmd[1])
+				return
+			}
+		}
+	}
+
+	fmt.Printf("%s not found\n", cmd[1])
 }
 
 func waitForUserInput() string {

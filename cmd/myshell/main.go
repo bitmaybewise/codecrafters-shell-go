@@ -9,12 +9,14 @@ import (
 )
 
 func main() {
-	fmt.Fprint(os.Stdout, "$ ")
 
-	value := waitForUserInput()
-	value = strings.Trim(value, "\n")
-	cmd := strings.Split(value, " ")
-	fmt.Printf("%s: command not found\n", cmd[0])
+	for {
+		fmt.Fprint(os.Stdout, "$ ")
+		value := waitForUserInput()
+		value = strings.Trim(value, "\n")
+		cmd := strings.Split(value, " ")
+		fmt.Printf("%s: command not found\n", cmd[0])
+	}
 }
 
 func waitForUserInput() string {

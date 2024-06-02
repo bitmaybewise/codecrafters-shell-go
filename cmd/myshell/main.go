@@ -15,6 +15,9 @@ func main() {
 		value := waitForUserInput()
 		value = strings.Trim(value, "\n")
 		cmd := strings.Split(value, " ")
+		if cmd[0] == "exit" {
+			os.Exit(0)
+		}
 		fmt.Printf("%s: command not found\n", cmd[0])
 	}
 }

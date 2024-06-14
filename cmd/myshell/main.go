@@ -61,7 +61,12 @@ func shellType(cmd []string, builtins shellBuiltinsType) {
 }
 
 func shellCd(cmd []string, builtins shellBuiltinsType) {
-	if err := os.Chdir(cmd[1]); err != nil {
+	home := os.Getenv("HOME")
+	cdInput := cmd[1]
+	if cdInput == "~" {
+		cdInput = home
+	}
+	if err := os.Chdir(cdInput); err != nil {
 		fmt.Printf("cd: %s: No such file or directory\n", cmd[1])
 	}
 }

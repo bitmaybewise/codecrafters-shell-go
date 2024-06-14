@@ -33,6 +33,7 @@ var shellBuiltins = shellBuiltinsType{
 	"exit": checkArgs(shellExit, -1),
 	"echo": checkArgs(shellEcho, -1),
 	"type": checkArgs(shellType, -1),
+	"cd":   checkArgs(shellCd, -1),
 }
 
 func shellEcho(cmd []string, _builtins shellBuiltinsType) {
@@ -52,11 +53,17 @@ func shellType(cmd []string, builtins shellBuiltinsType) {
 
 	dir, err := findInPath(cmd[1])
 	if err != nil {
-		fmt.Printf("%s %s\n", cmd[1], err)
+		fmt.Printf("%s: %s\n", cmd[1], err)
 		return
 	}
 
 	fmt.Printf("%s is %s/%s\n", cmd[1], dir, cmd[1])
+}
+
+func shellCd(cmd []string, builtins shellBuiltinsType) {
+	if err := os.Chdir(cmd[1]); err != nil {
+		fmt.Printf("cd: %s: No such file or directory\n", cmd[1])
+	}
 }
 
 func shellExec(cmd []string) {
